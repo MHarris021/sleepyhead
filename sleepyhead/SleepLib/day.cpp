@@ -678,22 +678,18 @@ bool Day::channelExists(ChannelID id)
     //if (machine->hasChannel(id)) return true;
     //return false;
 }
+
 bool Day::channelHasData(ChannelID id)
 {
-    bool r=false;
-    for (int i=0;i<sessions.size();i++) {
-        if (!sessions[i]->enabled()) continue;
-
-        if (sessions[i]->channelExists(id)) {
-            r=true;
-            break;
-        }
-        if (sessions[i]->m_valuesummary.contains(id)) {
-            r=true;
-            break;
-        }
+    for (int i = 0; i < sessions.size(); i++) {
+        if (!sessions[i]->enabled())
+            continue;
+        if (sessions[i]->channelExists(id))
+            return true;
+        if (sessions[i]->m_valuesummary.contains(id))
+            return true;
     }
-    return r;
+    return false;
 }
 
 void Day::OpenEvents()
