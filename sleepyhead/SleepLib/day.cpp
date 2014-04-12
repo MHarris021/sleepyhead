@@ -79,6 +79,7 @@ EventDataType Day::settings_max(ChannelID code)
     }
     return val;
 }
+
 EventDataType Day::settings_min(ChannelID code)
 {
     EventDataType val=0,tmp;
@@ -123,6 +124,7 @@ EventDataType Day::settings_avg(ChannelID code)
     val/=EventDataType(cnt);
     return val;
 }
+
 EventDataType Day::settings_wavg(ChannelID code)
 {
     double s0=0,s1=0,s2=0,tmp;
@@ -143,7 +145,6 @@ EventDataType Day::settings_wavg(ChannelID code)
     tmp=(s1/s2);
     return tmp;
 }
-
 
 EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 {
@@ -339,6 +340,7 @@ EventDataType Day::wavg(ChannelID code)
 
     return (s1/s2);
 }
+
 // Total session time in milliseconds
 qint64 Day::total_time()
 {
@@ -595,61 +597,63 @@ EventDataType Day::physMax(ChannelID code)
         if (first) {
             max=tmp;
             first=false;
-        } else {
-            if (tmp>max) max=tmp;
+        } else if (tmp>max) {
+            max=tmp;
         }
     }
     return max;
 }
+
 EventDataType Day::cph(ChannelID code)
 {
-    double sum=0;
-    //EventDataType h=0;
-    for (int i=0;i<sessions.size();i++) {
-        if (!sessions[i]->enabled()) continue;
-        if (!sessions[i]->m_cnt.contains(code)) continue;
-        sum+=sessions[i]->count(code);
-        //h+=sessions[i]->hours();
+    double sum = 0;
+    for (int i = 0; i < sessions.size(); i++) {
+        if (!sessions[i]->enabled())
+            continue;
+        if (!sessions[i]->m_cnt.contains(code))
+            continue;
+        sum += sessions[i]->count(code);
     }
-    sum/=hours();
+    sum /= hours();
     return sum;
 }
 
 EventDataType Day::sph(ChannelID code)
 {
-    EventDataType sum=0;
-    EventDataType h=0;
-    for (int i=0;i<sessions.size();i++) {
-        if (!sessions[i]->enabled()) continue;
-        if (!sessions[i]->m_sum.contains(code)) continue;
-        sum+=sessions[i]->sum(code)/3600.0;//*sessions[i]->hours();
-        //h+=sessions[i]->hours();
+    EventDataType sum = 0;
+    for (int i = 0; i < sessions.size(); i++) {
+        if (!sessions[i]->enabled())
+            continue;
+        if (!sessions[i]->m_sum.contains(code))
+            continue;
+        sum += sessions[i]->sum(code) / 3600.0;
     }
-    h=hours();
-    sum=(100.0/h)*sum;
+    sum = (100.0/hours())*sum;
     return sum;
 }
 
 int Day::count(ChannelID code)
 {
-    int sum=0;
-    for (int i=0;i<sessions.size();i++) {
-        if (!sessions[i]->enabled()) continue;
-        sum+=sessions[i]->count(code);
+    int sum = 0;
+    for (int i = 0; i < sessions.size(); i++) {
+        if (sessions[i]->enabled())
+            sum += sessions[i]->count(code);
     }
     return sum;
 }
+
 bool Day::settingExists(ChannelID id)
 {
-    for (int j=0;j<sessions.size();j++) {
-        if (!sessions[j]->enabled()) continue;
-        QHash<ChannelID,QVariant>::iterator i=sessions[j]->settings.find(id);
-        if (i!=sessions[j]->settings.end()) {
+    for (int j = 0; j < sessions.size(); j++) {
+        if (!sessions[j]->enabled())
+            continue;
+        QHash<ChannelID, QVariant>::iterator i = sessions[j]->settings.find(id);
+        if (i != sessions[j]->settings.end())
             return true;
-        }
     }
     return false;
 }
+
 bool Day::eventsLoaded()
 {
     for (int i = 0; i < sessions.size() ;i++) {
