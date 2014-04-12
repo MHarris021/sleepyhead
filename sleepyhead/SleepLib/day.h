@@ -101,22 +101,16 @@ class Day
     EventDataType settings_max(ChannelID code);
 
     //! \brief Returns the first session time of this day
-    qint64 first();
+    qint64 first() const;
 
     //! \brief Returns the last session time of this day
-    qint64 last();
-
-    // //! \brief Sets the first session time of this day
-    // void setFirst(qint64 val) { d_first=val; }
-
-    // //! \brief Sets the last session time of this day
-    // void setLast(qint64 val) { d_last=val; }
+    qint64 last() const;
 
     //! \brief Returns the last session time of this day for the supplied Channel code
-    qint64 first(ChannelID code);
+    qint64 first(ChannelID code) const;
 
     //! \brief Returns the last session time of this day for the supplied Channel code
-    qint64 last(ChannelID code);
+    qint64 last(ChannelID code) const;
 
     //! \brief Returns the total time in milliseconds for this day
     qint64 total_time();

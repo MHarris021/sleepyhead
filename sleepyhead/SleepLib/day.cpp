@@ -393,14 +393,15 @@ bool Day::hasEnabledSessions()
     return false;
 }
 
-qint64 Day::first()
+qint64 Day::first() const
 {
     qint64 cur = 0;
-    for (QList<Session *>::iterator s = sessions.begin(); s != sessions.end(); s++) {
-        if (!(*s)->enabled())
+    for (int i = 0; i < sessions.size(); ++i) {
+        Session *session = sessions.at(i);
+        if (!session->enabled())
             continue;
 
-        qint64 time = (*s)->first();
+        qint64 time = session->first();
         if (time == 0)
             continue;
 
@@ -410,14 +411,15 @@ qint64 Day::first()
     return cur;
 }
 
-qint64 Day::first(ChannelID code)
+qint64 Day::first(ChannelID code) const
 {
     qint64 cur = 0;
-    for (QList<Session *>::iterator s = sessions.begin(); s != sessions.end(); s++) {
-        if (!(*s)->enabled())
+    for (int i = 0; i < sessions.size(); ++i) {
+        Session *session = sessions.at(i);
+        if (!session->enabled())
             continue;
 
-        qint64 time = (*s)->first(code);
+        qint64 time = session->first(code);
         if (time == 0)
             continue;
 
@@ -427,15 +429,16 @@ qint64 Day::first(ChannelID code)
     return cur;
 }
 
-qint64 Day::last()
+qint64 Day::last() const
 {
     qint64 cur = 0;
 
-    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        if (!(*s)->enabled())
+    for (int i = 0; i < sessions.size(); ++i) {
+        Session *session = sessions.at(i);
+        if (!session->enabled())
             continue;
 
-        qint64 time = (*s)->last();
+        qint64 time = session->last();
         if (time == 0)
             continue;
 
@@ -445,15 +448,16 @@ qint64 Day::last()
     return cur;
 }
 
-qint64 Day::last(ChannelID code)
+qint64 Day::last(ChannelID code) const
 {
     qint64 cur = 0;
 
-    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        if (!(*s)->enabled())
+    for (int i = 0; i < sessions.size(); ++i) {
+        Session *session = sessions.at(i);
+        if (!session->enabled())
             continue;
 
-        qint64 time = (*s)->last(code);
+        qint64 time = session->last(code);
         if (time == 0)
             continue;
 
