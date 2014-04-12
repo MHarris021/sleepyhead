@@ -1251,24 +1251,28 @@ EventDataType Session::rangeMax(ChannelID id, qint64 first,qint64 last)
     return max;
 }
 
+// Count the total number of event records.
 int Session::count(ChannelID id)
 {
-    QHash<ChannelID,int>::iterator i=m_cnt.find(id);
-    if (i!=m_cnt.end())
+    // Has the count already been cached?
+    QHash<ChannelID, int>::iterator i = m_cnt.find(id);
+    if (i != m_cnt.end())
         return i.value();
 
-    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
-    if (j==eventlist.end()) {
-        m_cnt[id]=0;
+    // No cache: count manually.
+    QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);
+    if (j == eventlist.end()) {
+        m_cnt[id] = 0;
         return 0;
     }
-    QVector<EventList *> & evec=j.value();
 
-    int sum=0;
-    for (int i=0;i<evec.size();i++) {
-        sum+=evec[i]->count();
-    }
-    m_cnt[id]=sum;
+    QVector<EventList *> &eventlists = j.value();
+
+    int sum = 0;
+    for (int i = 0; i < eventlists.size(); i++)
+        sum += eventlists[i]->count();
+
+    m_cnt[id] = sum;
     return sum;
 }
 
