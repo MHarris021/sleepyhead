@@ -65,7 +65,7 @@ public:
     bool SearchEvent(ChannelID code, qint64 time, qint64 dist=15000);
 
     //! \brief Return the sessionID
-    inline const SessionID & session() {
+    inline const SessionID &session() const {
         return s_session;
     }
 
@@ -76,10 +76,16 @@ public:
     void setEnabled(bool b);
 
     //! \brief Return the start of this sessions time range (in milliseconds since epoch)
-    qint64 first();
+    qint64 first() const;
 
     //! \brief Return the end of this sessions time range (in milliseconds since epoch)
-    qint64 last();
+    qint64 last() const;
+
+    //! \brief Returns (and caches) the first time for Channel code
+    qint64 first(ChannelID code);
+
+    //! \brief Returns (and caches) the last time for Channel code
+    qint64 last(ChannelID code);
 
     //! \brief Return the millisecond length of this session
     qint64 length() {
@@ -270,12 +276,6 @@ public:
     //! \brief Update this sessions latest time if it's more than the current record
     inline void updateLast(qint64 v) { if (!s_last) s_last=v; else if (s_last<v) s_last=v; }
 
-    //! \brief Returns (and caches) the first time for Channel code
-    qint64 first(ChannelID code);
-
-    //! \brief Returns (and caches) the last time for Channel code
-    qint64 last(ChannelID code);
-
     //! \brief Regenerates the Session Index Caches, and calls the fun calculation functions
     void UpdateSummaries();
 
@@ -299,6 +299,5 @@ protected:
     char s_enabled;
     QString s_eventfile;
 };
-
 
 #endif // SESSION_H

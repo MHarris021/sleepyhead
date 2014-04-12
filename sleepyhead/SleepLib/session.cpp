@@ -1494,16 +1494,16 @@ void Session::offsetSession(qint64 offset)
 
 }
 
-qint64 Session::first() {
-    qint64 start=s_first;
-    if (s_machine->GetType()==MT_CPAP)
-        start+=qint64(PROFILE.cpap->clockDrift())*1000L;
+qint64 Session::first() const {
+    qint64 start = s_first;
+    if (s_machine->GetType() == MT_CPAP)
+        start += qint64(PROFILE.cpap->clockDrift()) * 1000L;
     return start;
 }
 
-qint64 Session::last() {
-    qint64 last=s_last;
-    if (s_machine->GetType()==MT_CPAP)
-        last+=qint64(PROFILE.cpap->clockDrift())*1000L;
+qint64 Session::last() const {
+    qint64 last = s_last;
+    if (s_machine->GetType() == MT_CPAP)
+        last += qint64(PROFILE.cpap->clockDrift()) * 1000L;
     return last;
 }
