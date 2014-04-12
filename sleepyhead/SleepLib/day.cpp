@@ -652,14 +652,11 @@ bool Day::settingExists(ChannelID id)
 }
 bool Day::eventsLoaded()
 {
-    bool r=false;
-    for (int i=0;i<sessions.size();i++) {
-        if (sessions[i]->eventsLoaded()) {
-            r=true;
-            break;
-        }
+    for (int i = 0; i < sessions.size() ;i++) {
+        if (sessions[i]->eventsLoaded())
+            return true;
     }
-    return r;
+    return false;
 }
 
 bool Day::channelExists(ChannelID id)
