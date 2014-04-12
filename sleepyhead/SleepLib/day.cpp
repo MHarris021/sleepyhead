@@ -403,9 +403,7 @@ qint64 Day::first(ChannelID code)
         if (time == 0)
             continue;
 
-        if (cur == 0)
-            cur = time;
-        else if (time < cur)
+        if (cur == 0 || cur > time)
             cur = time;
     }
 
@@ -414,20 +412,21 @@ qint64 Day::first(ChannelID code)
 
 qint64 Day::last(ChannelID code)
 {
-    qint64 date=0;
-    qint64 tmp;
+    qint64 cur = 0;
 
     for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        if (!(*s)->enabled()) continue;
-        tmp=(*s)->last(code);
-        if (!tmp) continue;
-        if (!date) {
-            date=tmp;
-        } else {
-            if (tmp>date) date=tmp;
-        }
+        if (!(*s)->enabled())
+            continue;
+
+        qint64 time = (*s)->last(code);
+        if (time == 0)
+            continue;
+
+        if (cur == 0 || cur < time)
+            cur = time;
     }
-    return date;
+
+    return cur;
 }
 
 EventDataType Day::Min(ChannelID code)
