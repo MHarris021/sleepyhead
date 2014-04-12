@@ -391,10 +391,26 @@ bool Day::hasEnabledSessions()
     return false;
 }
 
+qint64 Day::first()
+{
+    qint64 cur = 0;
+    for (QList<Session *>::iterator s = sessions.begin(); s != sessions.end(); s++) {
+        if (!(*s)->enabled())
+            continue;
+
+        qint64 time = (*s)->first();
+        if (time == 0)
+            continue;
+
+        if (cur == 0 || cur > time)
+            cur = time;
+    }
+    return cur;
+}
+
 qint64 Day::first(ChannelID code)
 {
     qint64 cur = 0;
-
     for (QList<Session *>::iterator s = sessions.begin(); s != sessions.end(); s++) {
         if (!(*s)->enabled())
             continue;
@@ -406,7 +422,24 @@ qint64 Day::first(ChannelID code)
         if (cur == 0 || cur > time)
             cur = time;
     }
+    return cur;
+}
 
+qint64 Day::last()
+{
+    qint64 cur = 0;
+
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled())
+            continue;
+
+        qint64 time = (*s)->last();
+        if (time == 0)
+            continue;
+
+        if (cur == 0 || cur < time)
+            cur = time;
+    }
     return cur;
 }
 
@@ -425,7 +458,6 @@ qint64 Day::last(ChannelID code)
         if (cur == 0 || cur < time)
             cur = time;
     }
-
     return cur;
 }
 
@@ -666,58 +698,14 @@ bool Day::channelHasData(ChannelID id)
 
 void Day::OpenEvents()
 {
-    QList<Session *>::iterator s;
-
-    for (s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *> s = sessions.begin(); s != sessions.end(); ++s)
         (*s)->OpenEvents();
-    }
 }
+
 void Day::CloseEvents()
 {
-    QList<Session *>::iterator s;
-
-    for (s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s = sessions.begin(); s != sessions.end(); ++s)
         (*s)->TrashEvents();
-    }
-}
-
-qint64 Day::first()
-{
-    qint64 date=0;
-    qint64 tmp;
-
-    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        if (!(*s)->enabled()) continue;
-        tmp=(*s)->first();
-        if (!tmp) continue;
-        if (!date) {
-            date=tmp;
-        } else {
-            if (tmp<date) date=tmp;
-        }
-    }
-    return date;
-//    return d_first;
-}
-
-//! \brief Returns the last session time of this day
-qint64 Day::last()
-{
-    qint64 date=0;
-    qint64 tmp;
-
-    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        if (!(*s)->enabled()) continue;
-        tmp=(*s)->last();
-        if (!tmp) continue;
-        if (!date) {
-            date=tmp;
-        } else {
-            if (tmp>date) date=tmp;
-        }
-    }
-    return date;
-//    return d_last;
 }
 
 void Day::removeSession(Session * sess)
