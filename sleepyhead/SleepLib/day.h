@@ -33,8 +33,11 @@ class Session;
     */
 class Day
 {
-public:
-    Day(Machine *m);
+  public:
+    Day(Machine *m)
+      : machine(m), d_firstsession(true)
+    { }
+
     ~Day();
 
     //! \brief Add Session to this Day object (called during Load)
@@ -140,8 +143,6 @@ public:
     //! \brief Returns the number of Sessions in this day record
     int size() { return sessions.size(); }
 
-    Machine *machine;
-
     //! \brief Loads all Events files for this Days Sessions
     void OpenEvents();
 
@@ -165,14 +166,16 @@ public:
 
     void removeSession(Session * sess);
 
-protected:
+  public:
+    Machine *machine;
+
+  protected:
     //! \brief A Vector containing all sessions for this day
     QList<Session *> sessions;
     QHash<ChannelID, QHash<EventDataType, EventDataType> > perc_cache;
-    //qint64 d_first,d_last;
-private:
+
+  private:
     bool d_firstsession;
 };
-
 
 #endif // DAY_H

@@ -15,26 +15,21 @@
 #include <QMultiMap>
 #include <algorithm>
 
-Day::Day(Machine *m)
-:machine(m)
-{
-    d_firstsession=true;
-}
 Day::~Day()
 {
     QList<Session *>::iterator s;
-    for (s=sessions.begin();s!=sessions.end();++s) {
+    for (s = sessions.begin(); s != sessions.end(); ++s)
         delete (*s);
-    }
-
 }
+
 MachineType Day::machine_type()
 {
     return machine->GetType();
 }
+
 Session *Day::find(SessionID sessid) {
-    for (int i=0;i<size();i++) {
-        if (sessions[i]->session()==sessid)
+    for (int i = 0; i < size(); i++) {
+        if (sessions[i]->session() == sessid)
             return sessions[i];
     }
     return NULL;
@@ -59,16 +54,16 @@ void Day::AddSession(Session *s)
 
 EventDataType Day::settings_sum(ChannelID code)
 {
-    EventDataType val=0;
+    EventDataType val = 0;
     QList<Session *>::iterator s;
-    for (s=sessions.begin();s!=sessions.end();s++) {
-        if (!(*s)->enabled()) continue;
+    for (s = sessions.begin(); s != sessions.end(); s++) {
+        if (!(*s)->enabled())
+            continue;
 
-        Session & sess=*(*s);
-        QHash<ChannelID,QVariant>::iterator i=sess.settings.find(code);
-        if (i!=sess.settings.end()) {
-            val+=i.value().toDouble();
-        }
+        Session &sess = *(*s);
+        QHash<ChannelID,QVariant>::iterator i = sess.settings.find(code);
+        if (i != sess.settings.end())
+            val += i.value().toDouble();
     }
     return val;
 }
