@@ -393,23 +393,6 @@ bool Day::hasEnabledSessions()
     return b;
 }
 
-/*EventDataType Day::percentile(ChannelID code,double percent)
-{
-    double val=0;
-    int cnt=0;
-
-    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        Session & sess=*(*s);
-        if (sess.eventlist.find(code)!=sess.eventlist.end()) {
-            val+=sess.percentile(code,percent);
-            cnt++;
-        }
-    }
-    if (cnt==0) return 0;
-    return EventDataType(val/cnt);
-
-}*/
-
 qint64 Day::first(ChannelID code)
 {
     qint64 date=0;
