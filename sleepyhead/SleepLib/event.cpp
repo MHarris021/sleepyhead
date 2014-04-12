@@ -10,57 +10,52 @@
  * distribution for more details. */
 
 #include <QDebug>
+
 #include "event.h"
 
-EventList::EventList(EventListType et,EventDataType gain, EventDataType offset, EventDataType min, EventDataType max,double rate,bool second_field)
-    :m_type(et),m_gain(gain),m_offset(offset),m_min(min),m_max(max),m_rate(rate),m_second_field(second_field)
+EventList::EventList(EventListType et, EventDataType gain, EventDataType offset,
+                     EventDataType min, EventDataType max, double rate, bool second_field)
+  : m_type(et), m_count(0), m_gain(gain), m_offset(offset), m_min(min), m_max(max),
+    m_rate(rate), m_first(0), m_last(0), m_second_field(second_field)
 {
-    m_first=m_last=0;
-    m_count=0;
-
-    if (min==max) {  // Update Min & Max unless forceably set here..
-        m_update_minmax=true;
-        m_min2=m_min=999999999;
-        m_max2=m_max=-999999999;
-
+    if (min == max) {  // Update Min & Max unless forceably set here..
+        m_update_minmax = true;
+        m_min2 = m_min = 999999999;
+        m_max2 = m_max = -999999999;
     } else {
-        m_update_minmax=false;
+        m_update_minmax = false;
     }
 
     m_data.reserve(2048);
 
     // Reserve a few to increase performace??
 }
-EventList::~EventList()
-{
-}
+
 void EventList::clear()
 {
-    m_min2=m_min=999999999;
-    m_max2=m_max=-999999999;
-    m_update_minmax=true;
-    m_first=m_last=0;
-    m_count=0;
+    m_min2 = m_min = 999999999;
+    m_max2 = m_max = -999999999;
+    m_update_minmax = true;
+    m_first = m_last = 0;
+    m_count = 0;
 
     m_data.clear();
     m_data2.clear();
     m_time.clear();
-
 }
 
 qint64 EventList::time(quint32 i)
 {
-    if (m_type==EVL_Event) {
-        return m_first+qint64(m_time[i]);
-    }
-
-    return m_first+qint64((EventDataType(i)*m_rate));
+    if (m_type == EVL_Event)
+        return m_first + qint64(m_time[i]);
+    return m_first + qint64((EventDataType(i)*m_rate));
 }
 
 EventDataType EventList::data(quint32 i)
 {
-    return EventDataType(m_data[i])*m_gain;
+    return EventDataType(m_data[i]) * m_gain;
 }
+
 EventDataType EventList::data2(quint32 i)
 {
     return EventDataType(m_data2[i]);
@@ -71,35 +66,32 @@ void EventList::AddEvent(qint64 time, EventStoreType data)
     m_data.push_back(data);
 
     // Apply gain & offset
-    EventDataType val=EventDataType(data)*m_gain; // ignoring m_offset
+    EventDataType val = EventDataType(data) * m_gain; // ignoring m_offset
 
     if (m_update_minmax) {
-        if (m_count==0) {
-            m_max=m_min=val;
-        } else {
-            if (m_min>val) m_min=val;
-            if (m_max<val) m_max=val;
-        }
+        if (m_count == 0 || m_min > val)
+            m_min = val;
+        if (m_count == 0 || m_max < val)
+            m_max = val;
     }
 
-    if (!m_first) {
-        m_first=time;
-        m_last=time;
-    }
-    if (m_first>time) {
-        // Crud.. Update all the previous records
+    if (m_first == 0) {
+        m_first = time;
+        m_last = time;
+    } else if (m_first > time) {
+        // Crud.. Update all the previous records.
         // This really shouldn't happen.
 
-        qint32 t=(m_first-time);
-        for (quint32 i=0;i<m_count;i++) {
-            m_time[i]-=t;
-        }
-        m_first=time;
+        qint32 t = (m_first - time);
+        for (quint32 i = 0; i < m_count; i++)
+            m_time[i] -= t;
+        m_first = time;
     }
-    if (m_last < time)
-        m_last=time;
 
-    quint32 t=(time-m_first);
+    if (m_last < time)
+        m_last = time;
+
+    quint32 t = (time - m_first);
 
     m_time.push_back(t);
     m_count++;
@@ -107,42 +99,13 @@ void EventList::AddEvent(qint64 time, EventStoreType data)
 
 void EventList::AddEvent(qint64 time, EventStoreType data, EventStoreType data2)
 {
-    // Apply gain & offset
-    m_data.push_back(data);
+    AddEvent(time, data);
 
     if (m_second_field) {
         m_data2.push_back(data2);
-        if (m_min2>data2) m_min2=data2;
-        if (m_max2<data2) m_max2=data2;
+        m_min2 = (m_min2 > data2 ? data2 : m_min2);
+        m_max2 = (m_max2 < data2 ? data2 : m_max2);
     }
-
-    EventDataType val=EventDataType(data)*m_gain+m_offset;
-    if (m_update_minmax) {
-        if (m_min>val) m_min=val;
-        if (m_max<val) m_max=val;
-    }
-
-    if (!m_first) {
-        m_first=time;
-        m_last=time;
-    }
-    if (m_first>time) {
-        // Crud.. Update all the previous records
-        // This really shouldn't happen.
-
-        qint32 t=(m_first-time);
-        for (quint32 i=0;i<m_count;i++) {
-            m_time[i]-=t;
-        }
-        m_first=time;
-    }
-    if (m_last < time)
-        m_last=time;
-
-    quint32 t=(time-m_first);
-
-    m_time.push_back(t);
-    m_count++;
 }
 
 // Adds a consecutive waveform chunk
@@ -310,6 +273,7 @@ void EventList::AddWaveform(qint64 start, char * data, int recs, qint64 duration
     if (m_update_minmax) {
         for (sp=data; sp < ep; sp++) {
             raw=*sp;
+            //FIXME: val isn't defined yet... accesses random memory.
             val=EventDataType(val)*m_gain+m_offset;
             if (m_min>val) m_min=val;
             if (m_max<val) m_max=val;
@@ -318,6 +282,7 @@ void EventList::AddWaveform(qint64 start, char * data, int recs, qint64 duration
     } else {
         for (sp=data; sp < ep; sp++) {
             raw=*sp;
+            //FIXME: val isn't defined yet... accesses random memory.
             val=EventDataType(val)*m_gain+m_offset;
             *dp++=raw;
         }
