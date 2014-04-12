@@ -664,19 +664,13 @@ bool Day::eventsLoaded()
 
 bool Day::channelExists(ChannelID id)
 {
-    bool r=false;
-    for (int i=0;i<sessions.size();i++) {
-        if (!sessions[i]->enabled()) continue;
-
-        if (sessions[i]->eventlist.contains(id)) {
-            r=true;
-            break;
-        }
+    for (int i = 0; i < sessions.size(); i++) {
+        if (!sessions[i]->enabled())
+            continue;
+        if (sessions[i]->eventlist.contains(id))
+            return true;
     }
-    return r;
-//    return channelHasData(id);
-    //if (machine->hasChannel(id)) return true;
-    //return false;
+    return false;
 }
 
 bool Day::channelHasData(ChannelID id)
