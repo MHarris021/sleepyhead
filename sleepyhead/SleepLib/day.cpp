@@ -698,19 +698,14 @@ bool Day::channelHasData(ChannelID id)
 
 void Day::OpenEvents()
 {
-    QList<Session *>::iterator s;
-
-    for (s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s = sessions.begin(); s != sessions.end(); ++s)
         (*s)->OpenEvents();
-    }
 }
+
 void Day::CloseEvents()
 {
-    QList<Session *>::iterator s;
-
-    for (s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s = sessions.begin(); s != sessions.end(); ++s)
         (*s)->TrashEvents();
-    }
 }
 
 void Day::removeSession(Session * sess)
