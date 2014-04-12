@@ -381,16 +381,14 @@ qint64 Day::total_time()
     }
     return total; //d_totaltime;
 }
+
 bool Day::hasEnabledSessions()
 {
-    bool b=false;
-    for (QList<Session *>::iterator s=begin();s!=end();s++) {
-        if ((*s)->enabled()) {
-            b=true;
-            break;
-        }
+    for (QList<Session *>::iterator s = begin(); s != end(); s++) {
+        if ((*s)->enabled())
+            return true;
     }
-    return b;
+    return false;
 }
 
 qint64 Day::first(ChannelID code)
