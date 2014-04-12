@@ -393,20 +393,23 @@ bool Day::hasEnabledSessions()
 
 qint64 Day::first(ChannelID code)
 {
-    qint64 date=0;
-    qint64 tmp;
+    qint64 cur = 0;
 
-    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        if (!(*s)->enabled()) continue;
-        tmp=(*s)->first(code);
-        if (!tmp) continue;
-        if (!date) {
-            date=tmp;
-        } else {
-            if (tmp<date) date=tmp;
-        }
+    for (QList<Session *>::iterator s = sessions.begin(); s != sessions.end(); s++) {
+        if (!(*s)->enabled())
+            continue;
+
+        qint64 time = (*s)->first(code);
+        if (time == 0)
+            continue;
+
+        if (cur == 0)
+            cur = time;
+        else if (time < cur)
+            cur = time;
     }
-    return date;
+
+    return cur;
 }
 
 qint64 Day::last(ChannelID code)
